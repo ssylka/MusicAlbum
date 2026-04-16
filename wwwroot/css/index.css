@@ -1,0 +1,118 @@
+﻿.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.control {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.control input,
+.control select {
+    padding: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.mode-switch a {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid #ddd;
+    text-decoration: none;
+}
+
+#likesSlider {
+    width: 200px;
+}
+.mode-switch a {
+    font-size: 20px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    background: white;
+    border: 1px solid #ddd;
+}
+
+.mode-switch a:hover {
+    background: #eee;
+}
+
+.likes-control {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+#likesSlider {
+    width: 250px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+th {
+    background: #222;
+    color: white;
+    padding: 10px;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+tr:hover {
+    background: #f9f9f9;
+}
+th {
+    background: #222;
+    color: white;
+}
+
+tr {
+    border-bottom: 1px solid #eee;
+}
+
+td img {
+    border-radius: 8px;
+}
+
+td:nth-child(1) {
+    width: 40px;
+}
+
+td:nth-child(2) {
+    width: 80px;
+}
+
+td:nth-child(3) {
+    width: 30%;
+}
+
+td:nth-child(4) {
+    width: 20%;
+}
+
+td:nth-child(5) {
+    width: 20%;
+}
+
+td:nth-child(6) {
+    width: 15%;
+}
+
+td:nth-child(7) {
+    width: 80px;
+}
