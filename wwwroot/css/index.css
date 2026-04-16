@@ -21,14 +21,48 @@
     border: 1px solid #ccc;
 }
 
-.mode-switch a {
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: white;
-    border: 1px solid #ddd;
-    text-decoration: none;
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
 }
 
+    .switch input {
+        display: none;
+    }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    background-color: #ccc;
+    border-radius: 34px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: 0.3s;
+}
+
+    .slider:before {
+        content: "";
+        position: absolute;
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.3s;
+    }
+
+input:checked + .slider {
+    background-color: #4caf50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
 #likesSlider {
     width: 200px;
 }

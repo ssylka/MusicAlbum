@@ -38,3 +38,4 @@ C:\Users\Стас\source\repos\MusicAlbums\MusicAlbums\obj\Debug\net8.0\ref\Musi
 C:\Users\Стас\source\repos\MusicAlbums\MusicAlbums\bin\Debug\net8.0\SixLabors.Fonts.dll
 C:\Users\Стас\source\repos\MusicAlbums\MusicAlbums\bin\Debug\net8.0\SixLabors.ImageSharp.dll
 C:\Users\Стас\source\repos\MusicAlbums\MusicAlbums\bin\Debug\net8.0\SixLabors.ImageSharp.Drawing.dll
+C:\Users\Стас\source\repos\MusicAlbums\MusicAlbums\obj\Debug\net8.0\MusicAlbums.sourcelink.json

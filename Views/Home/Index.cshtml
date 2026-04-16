@@ -12,8 +12,17 @@
 
 <div class="toolbar">
     <div class="mode-switch">
-        <a href="/?page=1&seed=@ViewBag.Seed&mode=table&avgLikes=@ViewBag.AvgLikes.ToString(System.Globalization.CultureInfo.InvariantCulture)">📊</a>
-        <a href="/?page=1&seed=@ViewBag.Seed&mode=infinite&avgLikes=@ViewBag.AvgLikes.ToString(System.Globalization.CultureInfo.InvariantCulture)">📜</a>
+
+        <div class="mode-icons">
+            <span>📊</span>
+            <span>📜</span>
+        </div>
+
+        <label class="switch">
+            <input type="checkbox" id="modeToggle" @(ViewBag.Mode == "infinite" ? "checked" : "")>
+            <span class="slider"></span>
+        </label>
+
     </div>
 
     <div class="likes-control">
@@ -180,14 +189,24 @@ else
 
     const slider = document.getElementById("likesSlider");
     const label = document.getElementById("likesValue");
-    
+
+    const modeToggle = document.getElementById("modeToggle");
+
+    modeToggle.addEventListener("change", () => {
+    const mode = modeToggle.checked ? "infinite" : "table";
+
+    const seed = seedInput.value;
+    const location = regionSelect.value;
+    const avgLikes = parseFloat(slider.value.replace(",", "."));
+    const userLocation = "@ViewBag.Location";
+
+    window.location.href =
+        `/?page=1&seed=${seed}&mode=${mode}&location=${location}&avgLikes=${avgLikes}`;
+    });
+
     slider.addEventListener("input", async () => {
         const avgLikes = parseFloat(slider.value.replace(",", "."));
         label.textContent = avgLikes;
-
-        const seed = @ViewBag.Seed;
-        const mode = "@ViewBag.Mode";
-        const userLocation = "@ViewBag.Location";
          if (mode === "infinite") {
             page = 1;
             window.scrollTo({ top: 0 });
@@ -237,7 +256,7 @@ else
 }
 <script src="~/js/index.js"></script>
 <script>
-        const regionSelect = document.getElementById("regionSelect");
+    const regionSelect = document.getElementById("regionSelect");
     const seedInput = document.getElementById("seedInput");
     const randomSeedBtn = document.getElementById("randomSeed");
 
@@ -247,7 +266,7 @@ else
         const seed = seedInput.value;
         const location = regionSelect.value;
         const avgLikes = parseFloat(slider.value.replace(",", "."));
-        const mode = @ViewBag.Mode;
+        const mode = modeToggle.checked ? "infinite" : "table";
 
         window.location.href =
             `/?page=1&seed=${seed}&mode=${mode}&location=${location}&avgLikes=${avgLikes}`;
