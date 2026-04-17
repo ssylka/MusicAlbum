@@ -4,16 +4,13 @@
 {
     <tr>
         <td>@song.Index</td>
-
-        <td>
-            <img src="@song.CoverUrl" style="margin:5px; height: 8vh;width: auto;border-radius:10px" />
-        </td>
-
+        <td><img src="@song.CoverUrl" style="margin:5px; height: 8vh;width: auto;border-radius:10px" /></td>
         <td>@song.Title</td>
         <td>@song.Artist</td>
         <td>@song.Album</td>
         <td>@song.Genre</td>
         <td>@song.Likes</td>
+        <td><audio controls src="@song.MusicUrl"></audio></td>
     </tr>
 }
 

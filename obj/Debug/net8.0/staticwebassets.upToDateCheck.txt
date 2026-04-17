@@ -1,3 +1,4 @@
+wwwroot\css\index.css
 wwwroot\css\site.css
 wwwroot\favicon.ico
 wwwroot\js\index.js
@@ -59,4 +60,3 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\css\index.css

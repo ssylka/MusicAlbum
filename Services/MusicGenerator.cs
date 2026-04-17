@@ -30,7 +30,6 @@ namespace MusicAlbums.Services
             {
                 double freq1 = frequencies[random.Next(frequencies.Length)];
 
-                // вторая нота (иногда есть, иногда нет)
                 bool useSecond = random.NextDouble() > 0.5;
                 double freq2 = frequencies[random.Next(frequencies.Length)];
 
@@ -43,7 +42,6 @@ namespace MusicAlbums.Services
                 {
                     double t = (double)i / sampleRate;
 
-                    // плавное затухание
                     double fade = 1.0 - (double)i / noteLength;
 
                     double sample = Math.Sin(2 * Math.PI * freq1 * t);

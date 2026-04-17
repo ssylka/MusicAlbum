@@ -17,7 +17,6 @@ namespace MusicAlbums.Services
             title ??= "Unknown Title";
             artist ??= "Unknown Artist";
 
-            // 🔥 стабильный random
             var random = new Random(seed);
 
             int width = 300;
@@ -47,7 +46,6 @@ namespace MusicAlbums.Services
                         break;
                 }
 
-                // мягкая тень снизу
                 ctx.Fill(new LinearGradientBrush(
                     new PointF(0, height * 0.65f),
                     new PointF(0, height),
@@ -57,22 +55,19 @@ namespace MusicAlbums.Services
                 ));
             });
 
-            // 🔤 шрифты
             var fontBig = SystemFonts.CreateFont("Arial", 36, FontStyle.Bold);
             var fontSmall = SystemFonts.CreateFont("Arial", 18, FontStyle.Bold);
 
-            // 🔥 контрастный цвет текста
             var textColor = GetContrastColor(background);
 
             image.Mutate(ctx =>
             {
                 var fontCollection = new FontCollection();
-                var fontFamily = SystemFonts.Families.First(); // или свой шрифт
+                var fontFamily = SystemFonts.Families.First();
 
                 var textColor = GetContrastColor(background);
                 var strokeColor = textColor == Color.White ? Color.Black : Color.White;
 
-                // 🔝 Верх (название)
                 DrawFittedText(
                     ctx,
                     title.ToUpper(),
@@ -84,7 +79,6 @@ namespace MusicAlbums.Services
                     strokeColor
                 );
 
-                // 🔽 Низ (автор)
                 DrawFittedText(
                     ctx,
                     artist.ToUpper(),
@@ -106,7 +100,6 @@ namespace MusicAlbums.Services
         {
             Font font = null;
 
-            // 🔽 уменьшаем размер, пока не влезет
             for (float size = maxFontSize; size >= minFontSize; size -= 2)
             {
                 var testFont = fontFamily.CreateFont(size, FontStyle.Bold);
@@ -137,13 +130,10 @@ namespace MusicAlbums.Services
 
             var glyphs = TextBuilder.GenerateGlyphs(text, drawOptions);
 
-            // обводка
             ctx.Draw(Pens.Solid(strokeColor, 3), glyphs);
 
-            // заливка
             ctx.Fill(fillColor, glyphs);
         }
-        // ===== СТИЛИ =====
 
         private Color DrawGradientCircles(IImageProcessingContext ctx, Random random, int w, int h)
         {
@@ -248,9 +238,6 @@ namespace MusicAlbums.Services
 
             return bg;
         }
-
-        // ===== ФИГУРЫ =====
-
         private void DrawMic(IImageProcessingContext ctx, float x, float y)
         {
             ctx.Fill(Color.Black, new EllipsePolygon(x, y - 30, 18));
@@ -281,9 +268,6 @@ namespace MusicAlbums.Services
             ctx.Fill(Color.Black, new EllipsePolygon(x, y, 25));
             ctx.Fill(Color.Black, new RectangularPolygon(x - 4, y - 70, 8, 70));
         }
-
-        // ===== УТИЛИТЫ =====
-
         private Color RandomColor(Random random, byte alpha = 255)
         {
             return new Rgba32(

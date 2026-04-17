@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-//using Microsoft.AspNetCore.Mvc.RazorPages;
 using MusicAlbums.Models;
 using MusicAlbums.Services;
 using System.Diagnostics;
@@ -10,11 +9,11 @@ namespace MusicAlbums.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly SongGenerator _songGenerator = new SongGenerator();
-        private readonly MusicGenerator _generator = new MusicGenerator();
+        private readonly MusicGenerator _musicGenerator = new MusicGenerator();
         [HttpGet("music")]
         public IActionResult MusicGenerate(int seed)
         {
-            var bytes = _generator.Generate(seed);
+            var bytes = _musicGenerator.Generate(seed);
             return File(bytes, "audio/wav");
         }
 
