@@ -10,6 +10,13 @@ namespace MusicAlbums.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly SongGenerator _songGenerator = new SongGenerator();
+        private readonly MusicGenerator _generator = new MusicGenerator();
+        [HttpGet("music")]
+        public IActionResult MusicGenerate(int seed)
+        {
+            var bytes = _generator.Generate(seed);
+            return File(bytes, "audio/wav");
+        }
 
         public HomeController(ILogger<HomeController> logger)
         {

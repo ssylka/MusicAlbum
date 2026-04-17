@@ -9,5 +9,6 @@
         public string Genre { get; set; }
         public int Likes { get; set; }
         public string CoverUrl { get; set; }
+        public string MusicUrl { get; set; }
     }
 }

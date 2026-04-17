@@ -54,6 +54,10 @@
               "target": "Package",
               "version": "[35.6.5, )"
             },
+            "NAudio": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
             "SixLabors.Fonts": {
               "target": "Package",
               "version": "[2.1.3, )"

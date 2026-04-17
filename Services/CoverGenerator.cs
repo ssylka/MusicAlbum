@@ -5,6 +5,9 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
+using System.Collections.Generic;
+using System.IO;
+
 namespace MusicAlbums.Services
 {
     public class CoverGenerator
@@ -14,6 +17,7 @@ namespace MusicAlbums.Services
             title ??= "Unknown Title";
             artist ??= "Unknown Artist";
 
+            // 🔥 стабильный random
             var random = new Random(seed);
 
             int width = 300;
@@ -21,46 +25,76 @@ namespace MusicAlbums.Services
 
             using var image = new Image<Rgba32>(width, height);
 
-            int style = seed % 4;
+            int style = Math.Abs(seed % 4);
+
+            Color background = Color.White;
 
             image.Mutate(ctx =>
             {
                 switch (style)
                 {
                     case 0:
-                        DrawGradientCircles(ctx, random, width, height);
+                        background = DrawGradientCircles(ctx, random, width, height);
                         break;
                     case 1:
-                        DrawLinesStyle(ctx, random, width, height);
+                        background = DrawLinesStyle(ctx, random, width, height);
                         break;
                     case 2:
-                        DrawNoiseStyle(ctx, random, width, height);
+                        background = DrawNoiseStyle(ctx, random, width, height);
                         break;
                     case 3:
-                        DrawPosterStyle(ctx, random, width, height, seed); 
+                        background = DrawPosterStyle(ctx, random, width, height, seed);
                         break;
                 }
 
-                // shadow
+                // мягкая тень снизу
                 ctx.Fill(new LinearGradientBrush(
-                    new PointF(0, height * 0.6f),
+                    new PointF(0, height * 0.65f),
                     new PointF(0, height),
                     GradientRepetitionMode.None,
                     new ColorStop(0, Color.Transparent),
-                    new ColorStop(1, Color.Black.WithAlpha(70))
+                    new ColorStop(1, Color.Black.WithAlpha(80))
                 ));
             });
 
-            var fontBig = SystemFonts.CreateFont("Arial", 40, FontStyle.Bold);
-            var fontSmall = SystemFonts.CreateFont("Arial", 20, FontStyle.Bold);
+            // 🔤 шрифты
+            var fontBig = SystemFonts.CreateFont("Arial", 36, FontStyle.Bold);
+            var fontSmall = SystemFonts.CreateFont("Arial", 18, FontStyle.Bold);
+
+            // 🔥 контрастный цвет текста
+            var textColor = GetContrastColor(background);
 
             image.Mutate(ctx =>
             {
-                // up
-                ctx.DrawText(title.ToUpper(), fontBig, Color.Black, new PointF(10, 10));
+                var fontCollection = new FontCollection();
+                var fontFamily = SystemFonts.Families.First(); // или свой шрифт
 
-                // down
-                ctx.DrawText(artist.ToUpper(), fontSmall, Color.Black, new PointF(10, height - 60));
+                var textColor = GetContrastColor(background);
+                var strokeColor = textColor == Color.White ? Color.Black : Color.White;
+
+                // 🔝 Верх (название)
+                DrawFittedText(
+                    ctx,
+                    title.ToUpper(),
+                    new RectangleF(10, 10, width - 20, 80),
+                    fontFamily,
+                    40,
+                    16,
+                    textColor,
+                    strokeColor
+                );
+
+                // 🔽 Низ (автор)
+                DrawFittedText(
+                    ctx,
+                    artist.ToUpper(),
+                    new RectangleF(10, height - 70, width - 20, 60),
+                    fontFamily,
+                    28,
+                    14,
+                    textColor,
+                    strokeColor
+                ); ;
             });
 
             using var ms = new MemoryStream();
@@ -68,7 +102,50 @@ namespace MusicAlbums.Services
 
             return ms.ToArray();
         }
-        private void DrawGradientCircles(IImageProcessingContext ctx, Random random, int w, int h)
+        private void DrawFittedText(IImageProcessingContext ctx, string text, RectangleF area, FontFamily fontFamily, float maxFontSize, float minFontSize, Color fillColor, Color strokeColor)
+        {
+            Font font = null;
+
+            // 🔽 уменьшаем размер, пока не влезет
+            for (float size = maxFontSize; size >= minFontSize; size -= 2)
+            {
+                var testFont = fontFamily.CreateFont(size, FontStyle.Bold);
+
+                var options = new TextOptions(testFont)
+                {
+                    WrappingLength = area.Width,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+
+                var sizeF = TextMeasurer.MeasureSize(text, options);
+
+                if (sizeF.Height <= area.Height)
+                {
+                    font = testFont;
+                    break;
+                }
+            }
+
+            font ??= fontFamily.CreateFont(minFontSize, FontStyle.Bold);
+
+            var drawOptions = new RichTextOptions(font)
+            {
+                Origin = new PointF(area.X + area.Width / 2, area.Y),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                WrappingLength = area.Width
+            };
+
+            var glyphs = TextBuilder.GenerateGlyphs(text, drawOptions);
+
+            // обводка
+            ctx.Draw(Pens.Solid(strokeColor, 3), glyphs);
+
+            // заливка
+            ctx.Fill(fillColor, glyphs);
+        }
+        // ===== СТИЛИ =====
+
+        private Color DrawGradientCircles(IImageProcessingContext ctx, Random random, int w, int h)
         {
             var c1 = RandomColor(random);
             var c2 = RandomColor(random);
@@ -88,14 +165,18 @@ namespace MusicAlbums.Services
                     new EllipsePolygon(random.Next(w), random.Next(h), random.Next(20, 80))
                 );
             }
+
+            return c1;
         }
-        private void DrawLinesStyle(IImageProcessingContext ctx, Random random, int w, int h)
+
+        private Color DrawLinesStyle(IImageProcessingContext ctx, Random random, int w, int h)
         {
-            ctx.Fill(RandomColor(random));
+            var bg = RandomColor(random);
+            ctx.Fill(bg);
 
             for (int i = 0; i < 20; i++)
             {
-                var pen = Pens.Solid(RandomColor(random), random.Next(1, 4));
+                var pen = Pens.Solid(RandomColor(random), random.Next(1, 3));
 
                 ctx.DrawLine(
                     pen,
@@ -103,12 +184,16 @@ namespace MusicAlbums.Services
                     new PointF(random.Next(w), random.Next(h))
                 );
             }
-        }
-        private void DrawNoiseStyle(IImageProcessingContext ctx, Random random, int w, int h)
-        {
-            ctx.Fill(RandomColor(random));
 
-            for (int i = 0; i < 500; i++)
+            return bg;
+        }
+
+        private Color DrawNoiseStyle(IImageProcessingContext ctx, Random random, int w, int h)
+        {
+            var bg = RandomColor(random);
+            ctx.Fill(bg);
+
+            for (int i = 0; i < 400; i++)
             {
                 ctx.Fill(
                     RandomColor(random, 80),
@@ -116,18 +201,12 @@ namespace MusicAlbums.Services
                 );
             }
 
-            ctx.GaussianBlur(10); // 🔥 blur = AI feel
+            ctx.GaussianBlur(8);
+
+            return bg;
         }
-        private Color RandomColor(Random random, byte alpha = 255)
-        {
-            return new Rgba32(
-                (byte)random.Next(256),
-                (byte)random.Next(256),
-                (byte)random.Next(256),
-                alpha
-            );
-        }
-        private void DrawPosterStyle(IImageProcessingContext ctx, Random random, int w, int h, int seed)
+
+        private Color DrawPosterStyle(IImageProcessingContext ctx, Random random, int w, int h, int seed)
         {
             var bg = RandomBrightColor(random);
             ctx.Fill(bg);
@@ -139,8 +218,8 @@ namespace MusicAlbums.Services
 
             var points = new List<PointF>();
 
-            int spikes = random.Next(8, 16);
-            float outer = random.Next(80, 120);
+            int spikes = random.Next(8, 14);
+            float outer = random.Next(70, 110);
             float inner = random.Next(30, 60);
 
             for (int i = 0; i < spikes * 2; i++)
@@ -156,7 +235,7 @@ namespace MusicAlbums.Services
 
             ctx.Fill(burstColor, new Polygon(points.ToArray()));
 
-            int objectType = seed % 5;
+            int objectType = Math.Abs(seed % 5);
 
             switch (objectType)
             {
@@ -166,42 +245,71 @@ namespace MusicAlbums.Services
                 case 3: DrawDisc(ctx, centerX, centerY); break;
                 case 4: DrawGuitar(ctx, centerX, centerY); break;
             }
+
+            return bg;
         }
+
+        // ===== ФИГУРЫ =====
+
         private void DrawMic(IImageProcessingContext ctx, float x, float y)
         {
-            ctx.Fill(Color.Black, new EllipsePolygon(x, y - 30, 20));
-            ctx.Fill(Color.Black, new RectangularPolygon(x - 5, y - 30, 10, 80));
+            ctx.Fill(Color.Black, new EllipsePolygon(x, y - 30, 18));
+            ctx.Fill(Color.Black, new RectangularPolygon(x - 4, y - 30, 8, 70));
         }
+
         private void DrawNote(IImageProcessingContext ctx, float x, float y)
         {
-            ctx.Fill(Color.Black, new EllipsePolygon(x, y, 20));
-            ctx.Fill(Color.Black, new RectangularPolygon(x + 10, y - 80, 8, 80));
+            ctx.Fill(Color.Black, new EllipsePolygon(x, y, 18));
+            ctx.Fill(Color.Black, new RectangularPolygon(x + 10, y - 70, 6, 70));
         }
+
         private void DrawSpeaker(IImageProcessingContext ctx, float x, float y)
         {
-            ctx.Fill(Color.Black, new RectangularPolygon(x - 40, y - 60, 80, 120));
-
-            ctx.Fill(Color.Gray, new EllipsePolygon(x, y - 20, 20));
-            ctx.Fill(Color.DarkGray, new EllipsePolygon(x, y + 30, 25));
+            ctx.Fill(Color.Black, new RectangularPolygon(x - 35, y - 55, 70, 110));
+            ctx.Fill(Color.Gray, new EllipsePolygon(x, y - 15, 18));
+            ctx.Fill(Color.DarkGray, new EllipsePolygon(x, y + 25, 22));
         }
+
         private void DrawDisc(IImageProcessingContext ctx, float x, float y)
         {
-            ctx.Fill(Color.Black, new EllipsePolygon(x, y, 60));
-            ctx.Fill(Color.Gray, new EllipsePolygon(x, y, 15));
+            ctx.Fill(Color.Black, new EllipsePolygon(x, y, 55));
+            ctx.Fill(Color.Gray, new EllipsePolygon(x, y, 12));
         }
+
         private void DrawGuitar(IImageProcessingContext ctx, float x, float y)
         {
-            ctx.Fill(Color.Black, new EllipsePolygon(x, y, 30));
-            ctx.Fill(Color.Black, new RectangularPolygon(x - 5, y - 80, 10, 80));
+            ctx.Fill(Color.Black, new EllipsePolygon(x, y, 25));
+            ctx.Fill(Color.Black, new RectangularPolygon(x - 4, y - 70, 8, 70));
+        }
+
+        // ===== УТИЛИТЫ =====
+
+        private Color RandomColor(Random random, byte alpha = 255)
+        {
+            return new Rgba32(
+                (byte)random.Next(30, 230),
+                (byte)random.Next(30, 230),
+                (byte)random.Next(30, 230),
+                alpha
+            );
         }
 
         private Color RandomBrightColor(Random random)
         {
             return new Rgba32(
-                (byte)random.Next(100, 255),
-                (byte)random.Next(100, 255),
-                (byte)random.Next(100, 255)
+                (byte)random.Next(120, 255),
+                (byte)random.Next(120, 255),
+                (byte)random.Next(120, 255)
             );
+        }
+
+        private Color GetContrastColor(Color bg)
+        {
+            var rgba = bg.ToPixel<Rgba32>();
+
+            var luminance = (0.299 * rgba.R + 0.587 * rgba.G + 0.114 * rgba.B) / 255;
+
+            return luminance > 0.5 ? Color.Black : Color.White;
         }
     }
 }

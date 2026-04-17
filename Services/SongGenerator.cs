@@ -30,7 +30,7 @@
             public List<Song> Generate(int page, int seed, double avgLikes, string location = "en_US")
             {
                 faker = new Faker(location);
-                Randomizer.Seed = new Random(seed + page);
+                Randomizer.Seed = new Random(seed * 3 + page);
                 
                 var songs = new List<Song>();
 
@@ -39,16 +39,17 @@
                     int index = (page - 1) * 20 + i + 1;
                     string title = GenerateSongTitle(location);
                     string artist = faker.Name.FullName();
+                    string album = GenerateAlbumTitle(location);
                     songs.Add(new Song
                     {
                         Index = index,
                         Title = title,
                         Artist = artist,
-                        Album = GenerateAlbumTitle(location),   
+                        Album = album,
                         Genre = GenerateGenre(location), 
                         Likes = GenerateLikes(avgLikes),
-                        CoverUrl = $"cover?title={Uri.EscapeDataString(title)}&artist={Uri.EscapeDataString(artist)}&seed={seed + index}"
-
+                        CoverUrl = $"cover?title={Uri.EscapeDataString(album)}&artist={Uri.EscapeDataString(artist)}&seed={seed * 3 + index}",
+                        MusicUrl = $"music?seed={seed * 3 + index}"
                     });
                 }
 

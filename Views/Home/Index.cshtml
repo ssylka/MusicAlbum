@@ -5,7 +5,7 @@
     int seed = ViewBag.Seed;
     string location = ViewBag.Location;
     string mode = ViewBag.Mode;
-
+    double avgLikes = Convert.ToDouble(ViewBag.AvgLikes); ;
     int start = Math.Max(1, page - 1);
     int end = page + 1;
 }
@@ -28,7 +28,7 @@
     <div class="likes-control">
         <label>
             ❤️ Likes:
-            <span id="likesValue">@ViewBag.AvgLikes</span>
+            <span id="likesValue">@ViewBag.AvgLikes.ToString(System.Globalization.CultureInfo.InvariantCulture)</span>
         </label>
 
         <input type="range"
@@ -95,6 +95,7 @@
                 <th>Album</th>
                 <th>Genre</th>
                 <th>Likes</th>
+                <th></th>
             </tr>
         </thead>
 
@@ -103,16 +104,13 @@
             {
                 <tr>
                     <td>@song.Index</td>
-                    
-                    <td>
-                        <img src="@song.CoverUrl" style="margin:5px; height: 8vh;width: auto;border-radius:10px" />
-                    </td>
-
+                    <td><img src="@song.CoverUrl" style="margin:5px; height: 8vh;width: auto;border-radius:10px" /></td>
                     <td>@song.Title</td>
                     <td>@song.Artist</td>
                     <td>@song.Album</td>
                     <td>@song.Genre</td>
-                    <td>@song.Likes</td>
+                    <td>@song.Likes </td>
+                    <td><audio controls src="@song.MusicUrl"></audio></td>
                 </tr>
 
             }
@@ -122,7 +120,7 @@
 
         @if (page > 1)
         {
-            <a href="/?page=@(page - 1)&seed=@seed" style="text-decoration:none;color:black;">
+            <a href="/?page=@(page - 1)&seed=@seed&mode=$@mode&location=$@location&avgLikes=$@avgLikes.ToString(System.Globalization.CultureInfo.InvariantCulture)" style="text-decoration:none;color:black;">
                 ←
             </a>
         }
@@ -130,7 +128,7 @@
         @* страницы *@
         @for (int i = start; i <= end; i++)
         {
-            <a href="/?page=@i&seed=@seed"
+            <a href="/?page=@i&seed=@seed&mode=@mode&location=@location&avgLikes=@avgLikes.ToString(System.Globalization.CultureInfo.InvariantCulture)"
                style="
                         text-decoration:none;
                         padding:6px 10px;
@@ -141,7 +139,7 @@
             </a>
         }
 
-        <a href="/?page=@(page + 1)&seed=@seed" style="text-decoration:none;color:black;">
+        <a href="/?page=@(page + 1)&seed=@seed&mode=@mode&location=@location&avgLikes=@avgLikes.ToString(System.Globalization.CultureInfo.InvariantCulture)" style="text-decoration:none;color:black;">
             →
         </a>
     </div>
@@ -159,6 +157,7 @@ else
                 <th>Album</th>
                 <th>Genre</th>
                 <th>Likes</th>
+                <th></th>
             </tr>
         </thead>
 
@@ -167,16 +166,13 @@ else
             {
                 <tr>
                     <td>@song.Index</td>
-
-                    <td>
-                        <img src="@song.CoverUrl" style="margin:5px; height: 8vh;width: auto;border-radius:10px" />
-                    </td>
-
+                    <td><img src="@song.CoverUrl" style="margin:5px; height: 8vh;width: auto;border-radius:10px" /></td>
                     <td>@song.Title</td>
                     <td>@song.Artist</td>
                     <td>@song.Album</td>
                     <td>@song.Genre</td>
                     <td>@song.Likes</td>
+                    <td><audio controls src="@song.MusicUrl"></audio></td>
                 </tr>
 
             }
@@ -186,7 +182,6 @@ else
 
 
 <script>
-
     const slider = document.getElementById("likesSlider");
     const label = document.getElementById("likesValue");
 
@@ -203,29 +198,7 @@ else
     window.location.href =
         `/?page=1&seed=${seed}&mode=${mode}&location=${location}&avgLikes=${avgLikes}`;
     });
-
-    slider.addEventListener("input", async () => {
-        const avgLikes = parseFloat(slider.value.replace(",", "."));
-        label.textContent = avgLikes;
-         if (mode === "infinite") {
-            page = 1;
-            window.scrollTo({ top: 0 });
-
-            const res = await fetch(`/load-more?page=${page}&seed=${seed}&mode=${mode}&location=${userLocation}&avgLikes=${avgLikes}`);
-            const html = await res.text();
-
-            document.getElementById("song-container").innerHTML = html;
-        } 
-        else {
-            window.location.href =
-                `/?page=1&seed=${seed}&mode=${mode}&location=${userLocation}&avgLikes=${avgLikes}`;
-        }
-    });
 </script>
-
-
-
-
 @if (ViewBag.Mode == "infinite")
 {
     <script>
@@ -280,7 +253,7 @@ else
 
     //random seed
     randomSeedBtn.addEventListener("click", () => {
-        seedInput.value = Math.floor(Math.random() * 1000000000);
+        seedInput.value = Math.floor(Math.random() * 100000);
         reloadPage();
     });
 

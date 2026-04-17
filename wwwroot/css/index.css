@@ -44,17 +44,17 @@
     transition: 0.3s;
 }
 
-    .slider:before {
-        content: "";
-        position: absolute;
-        height: 20px;
-        width: 20px;
-        left: 3px;
-        bottom: 3px;
-        background-color: white;
-        border-radius: 50%;
-        transition: 0.3s;
-    }
+.slider:before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
 
 input:checked + .slider {
     background-color: #4caf50;
@@ -100,8 +100,8 @@ th {
     background: #222;
     color: white;
     padding: 10px;
+    text-align: center;
 }
-
 td {
     padding: 10px;
     border-bottom: 1px solid #eee;
@@ -109,10 +109,6 @@ td {
 
 tr:hover {
     background: #f9f9f9;
-}
-th {
-    background: #222;
-    color: white;
 }
 
 tr {
