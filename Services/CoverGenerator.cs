@@ -55,16 +55,24 @@ namespace MusicAlbums.Services
                 ));
             });
 
-            var fontBig = SystemFonts.CreateFont("Arial", 36, FontStyle.Bold);
-            var fontSmall = SystemFonts.CreateFont("Arial", 18, FontStyle.Bold);
-
             var textColor = GetContrastColor(background);
 
             image.Mutate(ctx =>
             {
                 var fontCollection = new FontCollection();
-                var fontPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "fonts", "Montserrat-Italic-VariableFont_wght.ttf");
-                var fontFamily = fontCollection.Add(fontPath);
+
+                var fontsDir = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "fonts");
+                var fontFiles = Directory.GetFiles(fontsDir, "*.ttf");
+
+                if (!Directory.Exists(fontsDir))
+                {
+                    throw new Exception($"Fonts folder not found: {fontsDir}");
+                }
+
+                var fontIndex = Math.Abs(seed % fontFiles.Length);
+                var selectedFontPath = fontFiles[fontIndex];
+
+                var fontFamily = fontCollection.Add(selectedFontPath);
 
                 var textColor = GetContrastColor(background);
                 var strokeColor = textColor == Color.White ? Color.Black : Color.White;

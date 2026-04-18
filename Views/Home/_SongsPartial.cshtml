@@ -1,5 +1,7 @@
 ﻿@model List<MusicAlbums.Models.Song>
-
+<ItemGroup>
+    <Content Include="wwwroot\fonts\**\*.ttf" CopyToOutputDirectory="Always" />
+</ItemGroup>
 @foreach (var song in Model)
 {
     <tr>
