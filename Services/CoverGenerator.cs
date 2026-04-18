@@ -63,7 +63,8 @@ namespace MusicAlbums.Services
             image.Mutate(ctx =>
             {
                 var fontCollection = new FontCollection();
-                var fontFamily = SystemFonts.Families.First();
+                var fontPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "fonts", "Montserrat-Italic-VariableFont_wght.ttf");
+                var fontFamily = fontCollection.Add(fontPath);
 
                 var textColor = GetContrastColor(background);
                 var strokeColor = textColor == Color.White ? Color.Black : Color.White;
